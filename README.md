@@ -1,7 +1,7 @@
 
 # COVIS Demo Site
 
----
+[Demo link (https://cyculab618.github.io/COVIS-demo-site/)](https://cyculab618.github.io/COVIS-demo-site/)
 
 ## Project Overview
 
