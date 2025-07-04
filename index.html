@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>COVIS Demo</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/base16/tomorrow.min.css" rel="stylesheet">
+
+    <style type="text/css" media="screen">
+      /* --- Main Layout --- */
+      html, body {
+        margin: 0;
+        padding: 0;
+        /* REMOVED flex and height properties to avoid conflict with Swal */
+      }
+
+      .header {
+        padding: 0 10px; /* Add some padding for aesthetics */
+      }
+
+      .wrap {
+        /* Use viewport height instead of flex-grow */
+        height: 85vh;
+        padding: 5px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      #coderesult {
+        width: 50%;
+        height: 60%; /* Height is now relative to .wrap's vh height */
+        display: flex;
+        flex-direction: column;
+      }
+      
+      #coding {
+        padding: 0px 2px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
+
+      /* --- Tabs --- */
+      .tab-content {
+        flex-grow: 1;
+        position: relative;
+        height: 100%;
+      }
+
+      .tab-pane {
+        height: 100%;
+        width: 100%;
+        position: relative;
+      }
+
+      /* --- Code Editor --- */
+      .editor-instance {
+        border: 1px solid #ccc;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: #f5f5f5;
+      }
+
+      /* --- Action Buttons --- */
+      .top-right-button-container {
+        position: absolute;
+        z-index: 10;
+        top: 8px;
+        right: 15px;
+        display: flex;
+        gap: 10px;
+      }
+      .btn2 {
+        padding: 3px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease, opacity 0.3s ease;
+        opacity: 0.7;
+      }
+      .btn2:hover {
+        opacity: 1;
+      }
+      .btn2:disabled {
+        opacity: 0.7;
+      }
+      .btn-visualize {
+        background-color: #f0d78c;
+        color: #333;
+      }
+
+      /* --- Page Header --- */
+      #t1, #t2 {
+        display: inline;
+      }
+      
+      /* --- SweetAlert2 Customizations --- */
+      .swalc-modal .swalc-show .swalc-fullscreen .swalc-container,
+      .swalc-html-container,
+      iframe {
+        display: block;
+        width: 90vw !important;
+        height: 90vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+        max-height: none !important;
+        border: none;
+      }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+      <h2 id="t1">COVIS demo site </h2>
+      <h6 id="t2">(Code and input are fixed.)</h6>
+    </div>
+
+    <div class='wrap'>
+        <div id='coderesult'>
+            <div id='coding'>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1-pane" type="button" role="tab" aria-controls="tab1-pane" aria-selected="true">main()</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2-pane" type="button" role="tab" aria-controls="tab2-pane" aria-selected="false">GCD()</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="tab1-pane" role="tabpanel" aria-labelledby="tab1-tab" tabindex="0">
+                        <div class='editor-instance' id="editor1"></div>
+                        <div class="top-right-button-container">
+                            <button type="button" class="btn2 btn-visualize" id="showVisualizeBtn1" title="Visualize program execution."><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Visualize</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab2-pane" role="tabpanel" aria-labelledby="tab2-tab" tabindex="0">
+                        <div class='editor-instance' id="editor2"></div>
+                        <div class="top-right-button-container">
+                            <button type="button" class="btn2 btn-visualize" id="showVisualizeBtn2" title="Visualize program execution."><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Visualize</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.5.0/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.5.0/ext-language_tools.min.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script>
+
+        // ----------------------------------------------------
+        // ACE Editor Setup
+        // ----------------------------------------------------
+        let editor1, editor2;
+
+        function setupAceEditors() {
+            const commonOptions = {
+                fontSize: '16px',
+                readOnly: true,
+                highlightActiveLine: false,
+                highlightGutterLine: false,
+                useWorker: false 
+            };
+
+            const mainCode = `/* hidden code here */
+
+int main() {
+  /* Please call GCD() in this function and get the correct output */
+
+  int num1, num2;
+  scanf("%d", &num1);
+  scanf("%d", &num2);
+  
+  int gcd = GCD(num1, num2);
+  printf("The GCD of %d and %d is %d.", num1, num2, gcd);
+  
+  return 0;
+}
+`;
+
+            const gcdCode = `/* hidden code here */
+
+/** 
+ * compute the greatest common divisor of two integers m and n
+ * @param m a positive integer
+ * @param n a positive integer
+ * @return the greatest common divisor of the two
+ */
+int GCD(int m, int n) {
+  int factor = 1;
+  int findgcd = 0;
+  
+  if ( m > n )
+    factor = n;
+  else
+    factor = m;
+    
+  for ( ; factor > 0 && !findgcd ; factor-- ) {
+    if ( m % factor == 0 && n % factor == 0 )
+      findgcd = 1;
+  }
+  
+  return factor + 1;
+}
+`;
+
+            editor1 = ace.edit("editor1");
+            editor1.setTheme("ace/theme/tomorrow");
+            editor1.session.setMode("ace/mode/c_cpp");
+            editor1.setOptions(commonOptions);
+            editor1.setValue(mainCode, 1);
+            editor1.renderer.$cursorLayer.element.style.display = "none";
+
+            editor2 = ace.edit("editor2");
+            editor2.setTheme("ace/theme/tomorrow");
+            editor2.session.setMode("ace/mode/c_cpp");
+            editor2.setOptions(commonOptions);
+            editor2.setValue(gcdCode, 1);
+            editor2.renderer.$cursorLayer.element.style.display = "none";
+        }
+
+        // ----------------------------------------------------
+        // Event Handlers
+        // ----------------------------------------------------
+        $(document).ready(function() {
+            const swalConfig = {
+                focusConfirm: false,
+                showCancelButton: true,
+                reverseButtons: true,
+                confirmButtonColor: '#F0D78C',
+                confirmButtonText: '<span style="color: #333;"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Visualize</span>',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel'
+            };
+
+            const swalIframeConfig = {
+                showCloseButton: true,
+                showConfirmButton: false,
+                customClass: { 'popup': 'swalc-fullscreen', 'container': 'swalc-container', 'html-container': 'swalc-html-container' },
+                grow: 'fullscreen'
+            };
+            
+            $('#showVisualizeBtn1').click(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                Swal.fire({
+                    ...swalConfig,
+                    input: 'textarea',
+                    inputValue: '4 6',
+                    inputAttributes: {
+                        'aria-label': 'Program input',
+                        style: 'white-space: pre-wrap;',
+                        readonly: true
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            ...swalIframeConfig,
+                            html: `<iframe src="demo-main.html"></iframe>`
+                        });
+                    }
+                });
+            });
+
+            $('#showVisualizeBtn2').click(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                Swal.fire({
+                    ...swalConfig,
+                    input: 'textarea',
+                    inputValue: '4 6',
+                    inputAttributes: {
+                        'aria-label': 'Program input',
+                        style: 'white-space: pre-wrap;',
+                        readonly: true
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            ...swalIframeConfig,
+                            html: `<iframe src="demo-gcd.html"></iframe>`
+                        });
+                    }
+                });
+            });
+
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+                const targetTab = $(e.target).data('bs-target');
+                if (targetTab === '#tab1-pane') {
+                    editor1.resize();
+                    editor1.focus();
+                } else if (targetTab === '#tab2-pane') {
+                    editor2.resize();
+                    editor2.focus();
+                }
+            });
+        });
+
+        // ----------------------------------------------------
+        // Page Load Execution
+        // ----------------------------------------------------
+        document.addEventListener('DOMContentLoaded', (event) => {
+            setupAceEditors();
+        });
+
+    </script>
+</body>
+</html>
