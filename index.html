@@ -265,21 +265,8 @@ int GCD(int m, int n) {
                 event.stopPropagation();
 
                 Swal.fire({
-                    ...swalConfig,
-                    input: 'textarea',
-                    inputValue: '4 6',
-                    inputAttributes: {
-                        'aria-label': 'Program input',
-                        style: 'white-space: pre-wrap;',
-                        readonly: true
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            ...swalIframeConfig,
-                            html: `<iframe src="demo-main.html"></iframe>`
-                        });
-                    }
+                    ...swalIframeConfig,
+                    html: `<iframe src="demo-main.html"></iframe>`
                 });
             });
 
@@ -288,21 +275,8 @@ int GCD(int m, int n) {
                 event.stopPropagation();
 
                 Swal.fire({
-                    ...swalConfig,
-                    input: 'textarea',
-                    inputValue: '4 6',
-                    inputAttributes: {
-                        'aria-label': 'Program input',
-                        style: 'white-space: pre-wrap;',
-                        readonly: true
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            ...swalIframeConfig,
-                            html: `<iframe src="demo-gcd.html"></iframe>`
-                        });
-                    }
+                    ...swalIframeConfig,
+                    html: `<iframe src="demo-gcd.html"></iframe>`
                 });
             });
 
