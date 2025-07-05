@@ -15,28 +15,40 @@
       html, body {
         margin: 0;
         padding: 0;
-        /* REMOVED flex and height properties to avoid conflict with Swal */
-      }
-
-      .header {
-        padding: 0 10px; /* Add some padding for aesthetics */
-      }
-
-      .wrap {
-        /* Use viewport height instead of flex-grow */
-        height: 85vh;
-        padding: 5px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
         box-sizing: border-box;
       }
 
+      /* --- Centered, Responsive Containers --- */
+      .header, .description, .content-wrapper {
+        width: 95%;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
+      }
+      
+      .header {
+        padding: 10px 0;
+        margin-top: 15px;
+      }
+      
+      .description {
+        margin-top: 15px;
+        margin-bottom: 20px;
+        padding: 15px; 
+        text-align: justify;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+      }
+      
+      .content-wrapper {
+      }
+
       #coderesult {
-        width: 50%;
-        height: 60%; /* Height is now relative to .wrap's vh height */
+        width: 100%;
+        height: 60vh;
+        min-height: 450px;
         display: flex;
         flex-direction: column;
       }
@@ -128,8 +140,12 @@
       <h2 id="t1">COVIS demo site </h2>
       <h6 id="t2">(Code and input are fixed.)</h6>
     </div>
+    
+    <div class="description">
+      <p>This page demonstrates the core functionality of COVIS (Code Visualization System) through two interactive examples. In the first tab, the GCD() function implementation is concealed behind a "/* hidden code here */" placeholder. When users click "visualize", COVIS skips the internal execution steps of GCD() during visualization. From the user’s perspective, the GCD() call at line 10 is like a built-in function. The second tab reverses this relationship, hiding the main() function while displaying the GCD() implementation. Please note that user input functionality is disabled in this demonstration.</p>
+    </div>
 
-    <div class='wrap'>
+    <div class='content-wrapper'>
         <div id='coderesult'>
             <div id='coding'>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
